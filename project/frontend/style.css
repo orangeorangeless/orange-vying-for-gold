@@ -1,0 +1,584 @@
+:root {
+  --bg: #f1ece2;
+  --panel: #fffdf9;
+  --panel-border: #e3dccf;
+  --line: #ded6c7;
+  --text: #33302a;
+  --muted: #7d766a;
+  --cell: #f7f3ea;
+  --cell-border: #ddd5c5;
+  --coin: #e6c67f;
+  --coin-text: #4d3a10;
+  --coin-line: #bd9a51;
+  --accent: #5f8d70;
+  --accent-hover: #6e9d7f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+  background: radial-gradient(circle at top, #fffefb 0%, var(--bg) 65%);
+  color: var(--text);
+}
+
+.app {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+h1, h2 {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(22px, 2.2vw, 38px);
+}
+
+h2 {
+  font-size: clamp(18px, 1.6vw, 29px);
+}
+
+code {
+  font-family: inherit;
+}
+
+.round-info,
+#roundText {
+  font-size: clamp(22px, 2.2vw, 38px);
+  font-weight: 700;
+}
+
+.round-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.rules-link {
+  font-size: 0.46em;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.4em 1em;
+  background: var(--panel);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.rules-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.rules-modal {
+  position: relative;
+  width: min(1120px, calc(100vw - 28px));
+  height: min(90dvh, 820px);
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  background: var(--bg);
+  box-shadow: 0 18px 50px rgba(90, 78, 55, 0.28);
+  overflow: hidden;
+}
+
+.rules-modal::backdrop {
+  background: rgba(80, 72, 58, 0.28);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.rules-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  padding: 0 0 0.08em;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(120, 105, 75, 0.12);
+}
+
+.rules-modal-close:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.rules-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--bg);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.board-wrap {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  container-type: size;
+  box-shadow: 0 2px 10px rgba(120, 105, 75, 0.08);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  gap: 4px;
+  aspect-ratio: 1 / 1;
+  width: min(56rem, 100%, 100cqh);
+  height: auto;
+  margin: 0;
+}
+
+.cell {
+  background: var(--cell);
+  border: 1px solid var(--cell-border);
+  border-radius: 6px;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  container-type: size;
+}
+
+.coin {
+  position: relative;
+  width: 80%;
+  height: 80%;
+  border-radius: 8px;
+  background: linear-gradient(155deg, #f4dfae 0%, var(--coin) 55%, #d8ae64 100%);
+  color: var(--coin-text);
+  border: 1px solid var(--coin-line);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 0 rgba(120, 90, 30, 0.22),
+    0 2px 8px rgba(160, 128, 62, 0.22);
+  white-space: nowrap;
+}
+
+.coin-amount {
+  font-size: 34cqmin;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 3cqmin;
+}
+
+.coin-icon {
+  width: 17cqmin;
+  height: 17cqmin;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: radial-gradient(circle at 32% 28%, #fff6cf 0%, #e3bf66 45%, #b2812b 75%, #7b5418 100%);
+  border: 1px solid #6a4a13;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.35),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.coin-icon::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 245, 200, 0.7);
+}
+
+.coin-icon::after {
+  content: "¥";
+  position: relative;
+  font-size: 12cqmin;
+  line-height: 1;
+  font-weight: 700;
+  color: #6c4a10;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.coin.claimed {
+  opacity: 0.4;
+  filter: grayscale(0.7);
+}
+
+.player {
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 4px rgba(90, 78, 55, 0.25);
+  z-index: 2;
+}
+
+/* 同格多人时缩回小尺寸，避免圆圈互相压住 */
+.player.crowded {
+  width: 40%;
+  height: 40%;
+}
+
+.player.p1 { background: #b5705c; }
+.player.p2 { background: #5f88a6; }
+.player.p3 { background: #6f9464; }
+.player.p4 { background: #8a76ab; }
+
+.spark {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,236,170,0.95) 0%, rgba(255,236,170,0) 55%),
+    radial-gradient(circle at 50% 50%, rgba(214,158,46,0.55) 0%, rgba(214,158,46,0) 52%);
+  animation: spark 1s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes spark {
+  from { opacity: 1; transform: scale(0.8); }
+  to { opacity: 0; transform: scale(1.25); }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  container-type: inline-size;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(120, 105, 75, 0.08);
+}
+
+#selectionSection,
+#scoreboardSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#selectionSection.hidden,
+#scoreboardSection.hidden,
+.hidden {
+  display: none;
+}
+
+.hint {
+  margin: 8px 0 10px;
+  color: var(--muted);
+  font-size: clamp(14px, 4.2cqi, 22px);
+}
+
+.controls-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  grid-template-rows: repeat(4, minmax(7em, 1fr));
+  gap: 4px;
+  flex: 1;
+  min-height: 0;
+  font-size: clamp(14px, 4.2cqi, 22px);
+}
+
+.controls-list li {
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  min-height: 0;
+}
+
+.player-card-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.controls-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+}
+
+.controls-left code {
+  font-size: 0.95em;
+}
+
+.dot {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 999px;
+  margin-right: 0.45em;
+}
+
+.dot.p1 { background: #b5705c; }
+.dot.p2 { background: #5f88a6; }
+.dot.p3 { background: #6f9464; }
+.dot.p4 { background: #8a76ab; }
+
+.head-icons {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  justify-self: center;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  font-size: 1.6em;
+  width: 5.4em;
+  height: 3.5em;
+  place-items: center;
+}
+
+.key {
+  position: relative;
+  width: 2.15em;
+  height: 2.15em;
+  border-radius: 0.4em;
+  border: 1px solid #cec6b6;
+  background: #fbf8f2;
+  color: #3a352d;
+  box-shadow: 0 1px 0 #d8d0c0;
+  font-size: 0.7em;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 编号角标：棋盘金币与键帽共用同一外观，只有尺寸单位不同 */
+.coin-tag {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--coin-text);
+  background: var(--coin);
+  border: 1px solid var(--coin-line);
+}
+
+/* 箭头是符号字形，font-weight 无效，用描边加粗到和字母同样的笔画 */
+.key-arrow {
+  -webkit-text-stroke: 0.035em currentColor;
+  font-size: 1.05em;
+  line-height: 1;
+}
+
+.key .coin-tag {
+  top: -0.34em;
+  left: -0.34em;
+  height: 1.3em;
+  padding: 0 0.3em;
+  border-radius: 0.3em;
+  font-size: 0.55em;
+}
+
+.coin .coin-tag {
+  top: -5cqmin;
+  left: -5cqmin;
+  height: 25cqmin;
+  padding: 0 5cqmin;
+  border-radius: 6cqmin;
+  font-size: 15cqmin;
+}
+
+.key-up { grid-column: 2; grid-row: 1; }
+.key-left { grid-column: 1; grid-row: 2; }
+.key-down { grid-column: 2; grid-row: 2; }
+.key-right { grid-column: 3; grid-row: 2; }
+
+.status-done {
+  color: #3f7d5c;
+  font-size: inherit;
+  font-weight: 700;
+  justify-self: end;
+  text-align: right;
+}
+
+.status-wait {
+  color: var(--muted);
+  font-size: inherit;
+  justify-self: end;
+  text-align: right;
+}
+
+.score-rows {
+  display: grid;
+  grid-template-rows: repeat(4, minmax(3em, 1fr));
+  gap: 4px;
+  margin: 10px 0 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.score-row {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 8px 8px 10px;
+  font-size: clamp(15px, 6.6cqi, 24px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 0.25em;
+  align-items: stretch;
+  text-align: left;
+  min-height: 0;
+  min-width: 0;
+}
+
+.score-row.ate {
+  background: #fff8e6;
+  border-color: var(--coin-line);
+}
+
+.score-player,
+.score-num {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.28em;
+  min-width: 0;
+}
+
+.score-who {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+
+.score-who .dot {
+  margin-right: 0.4em;
+  flex-shrink: 0;
+}
+
+.score-ate {
+  align-self: flex-start;
+  font-weight: 800;
+  font-size: 0.7em;
+  line-height: 1.2;
+  padding: 0.16em 0.45em;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.score-ate.is-yes {
+  color: var(--coin-text);
+  background: var(--coin);
+}
+
+.score-ate.is-no {
+  color: var(--muted);
+  background: #ece7dc;
+}
+
+.score-num {
+  align-items: flex-end;
+  padding-left: 0.35em;
+  border-left: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.score-num small {
+  color: var(--muted);
+  font-size: 0.62em;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.score-num b {
+  font-size: 1.55em;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.btn {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: clamp(14px, 4cqi, 18px);
+  font-weight: 700;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--accent-hover);
+}

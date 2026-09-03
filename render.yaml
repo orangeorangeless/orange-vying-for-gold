@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: vying-for-gold-api
+    runtime: node
+    rootDir: project/backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: API_BASE_URL
+        value: https://api.chatanywhere.tech
+      - key: MODEL
+        value: gpt-3.5-turbo
+      - key: API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false

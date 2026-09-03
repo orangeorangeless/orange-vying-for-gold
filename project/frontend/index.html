@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>四角抢金币</title>
+  <script>
+    // 首次访问先跳规则页，标记由 rules.js 在点击「开始游戏」时写入。
+    // 放在样式表之前，避免棋盘先闪一下再跳转。
+    try {
+      // ?reset=1 用于上线前反复测试首次进入的流程
+      if (new URLSearchParams(location.search).has("reset")) {
+        localStorage.removeItem("rulesSeen");
+      }
+      if (!localStorage.getItem("rulesSeen")) {
+        window.location.replace("rules.html");
+      }
+    } catch {
+      // 存储不可用时直接进入游戏
+    }
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="chat.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <h1>四角抢金币</h1>
+      <div class="round-info">
+        <span id="roundText">第 1 / 100 轮</span>
+        <button type="button" class="rules-link" id="rulesLink">规则</button>
+      </div>
+    </header>
+
+    <section class="layout">
+      <div class="board-wrap">
+        <div id="board" class="board" aria-label="9x9 棋盘"></div>
+      </div>
+
+      <aside class="panel">
+        <section id="selectionSection" class="card">
+          <h2>本轮选择</h2>
+          <p class="hint">每位玩家用自己的方向键盘选择金币格（不可修改）</p>
+          <ul class="controls-list">
+            <li>
+              <div class="player-card-head">
+                <span class="controls-left"><span class="dot p1"></span> 红方</span>
+                <div class="head-icons">
+                  <div class="keypad">
+                    <span class="key key-up"><span class="coin-tag">A</span>W</span>
+                    <span class="key key-left"><span class="coin-tag">B</span>A</span>
+                    <span class="key key-down"><span class="coin-tag">C</span>S</span>
+                    <span class="key key-right"><span class="coin-tag">D</span>D</span>
+                  </div>
+                </div>
+                <span id="status-p1" class="status-wait">未选择</span>
+              </div>
+            </li>
+            <li>
+              <div class="player-card-head">
+                <span class="controls-left"><span class="dot p2"></span> 蓝方</span>
+                <div class="head-icons">
+                  <div class="keypad">
+                    <span class="key key-up"><span class="coin-tag">A</span>I</span>
+                    <span class="key key-left"><span class="coin-tag">B</span>J</span>
+                    <span class="key key-down"><span class="coin-tag">C</span>K</span>
+                    <span class="key key-right"><span class="coin-tag">D</span>L</span>
+                  </div>
+                </div>
+                <span id="status-p2" class="status-wait">未选择</span>
+              </div>
+            </li>
+            <li>
+              <div class="player-card-head">
+                <span class="controls-left"><span class="dot p3"></span> 绿方</span>
+                <div class="head-icons">
+                  <div class="keypad">
+                    <span class="key key-up"><span class="coin-tag">A</span>T</span>
+                    <span class="key key-left"><span class="coin-tag">B</span>F</span>
+                    <span class="key key-down"><span class="coin-tag">C</span>G</span>
+                    <span class="key key-right"><span class="coin-tag">D</span>H</span>
+                  </div>
+                </div>
+                <span id="status-p3" class="status-wait">未选择</span>
+              </div>
+            </li>
+            <li>
+              <div class="player-card-head">
+                <span class="controls-left"><span class="dot p4"></span> 紫方</span>
+                <div class="head-icons">
+                  <div class="keypad">
+                    <span class="key key-up"><span class="coin-tag">A</span><span class="key-arrow">↑</span></span>
+                    <span class="key key-left"><span class="coin-tag">B</span><span class="key-arrow">←</span></span>
+                    <span class="key key-down"><span class="coin-tag">C</span><span class="key-arrow">↓</span></span>
+                    <span class="key key-right"><span class="coin-tag">D</span><span class="key-arrow">→</span></span>
+                  </div>
+                </div>
+                <span id="status-p4" class="status-wait">未选择</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section id="scoreboardSection" class="card hidden">
+          <h2>本轮结算</h2>
+          <div id="scoreRows" class="score-rows"></div>
+          <button id="continueBtn" class="btn">继续</button>
+        </section>
+
+        <section id="endSection" class="card hidden">
+          <h2>游戏结束，感谢游玩</h2>
+          <p>100 轮已完成。</p>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <button type="button" id="chatFab" class="chat-fab" aria-label="打开 AI 助手">AI</button>
+  <section id="chatPanel" class="chat-panel hidden" aria-label="AI 智能问答">
+    <header class="chat-header">
+      <span>游戏助手</span>
+      <button type="button" id="chatClose" class="chat-close" aria-label="关闭">×</button>
+    </header>
+    <div id="chatMessages" class="chat-messages"></div>
+    <div class="chat-input-row">
+      <textarea id="chatInput" class="chat-input" rows="2" placeholder="输入问题，Enter 发送"></textarea>
+      <button type="button" id="chatSend" class="chat-send">发送</button>
+    </div>
+  </section>
+
+  <dialog id="rulesModal" class="rules-modal" aria-label="游戏规则">
+    <button type="button" id="rulesModalClose" class="rules-modal-close" aria-label="关闭">×</button>
+    <iframe id="rulesFrame" class="rules-frame" title="游戏规则"></iframe>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="script.js?v=live21"></script>
+  <script src="chat.js"></script>
+</body>
+</html>

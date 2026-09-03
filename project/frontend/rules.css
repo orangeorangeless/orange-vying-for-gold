@@ -1,0 +1,729 @@
+﻿/* 规则页整页不滚动：外层锁高，中间的卡片区域吃掉剩余空间 */
+.rules-body {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+html:has(.rules-embed),
+.rules-embed {
+  height: 100%;
+  background: var(--bg);
+}
+
+.rules-embed .rules-head,
+.rules-embed .rules-actions {
+  display: none;
+}
+
+.rules-embed .rules {
+  height: 100%;
+  max-width: none;
+  padding-top: 44px;
+}
+
+.rules {
+  /* 箭头占位由这两个变量统一控制，计分卡靠它们缩进到与翻页卡片同宽 */
+  --nav-size: clamp(34px, 3.6vw, 48px);
+  --nav-gap: clamp(6px, 1.2vw, 16px);
+
+  height: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(10px, 1.8vh, 24px) clamp(12px, 3vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.4vh, 16px);
+}
+
+.rules-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.2em 0.9em;
+  flex: none;
+}
+
+.rules-head h1 {
+  font-size: clamp(22px, 3vh, 38px);
+  letter-spacing: 0.05em;
+}
+
+.rules-sub {
+  color: var(--muted);
+  font-size: clamp(12px, 1.55vh, 16px);
+  letter-spacing: 0.04em;
+}
+
+.f-pos { color: #a8801f; }
+.f-neg { color: #ab6552; }
+.f-sum { color: var(--accent); }
+.f-eq { color: var(--muted); font-weight: 600; }
+
+/* ---- 翻页卡片区 ---- */
+
+/* 卡片吃掉标题和按钮之间的全部剩余高度 */
+.carousel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--nav-size) minmax(0, 1fr) var(--nav-size);
+  align-items: stretch;
+  gap: var(--nav-gap);
+}
+
+.nav-btn {
+  align-self: center;
+  width: var(--nav-size);
+  aspect-ratio: 1 / 1;
+  padding: 0 0 0.12em;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: clamp(22px, 2.2vw, 30px);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(120, 105, 75, 0.12);
+  transition: color 0.18s, border-color 0.18s, opacity 0.18s;
+}
+
+.nav-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* 卡片的外观移到 deck 上：它是固定不动的取景窗，轨道在里面整页滑过 */
+.deck {
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(120, 105, 75, 0.08);
+}
+
+/* 轨道自身宽度锁成一页，各页横向溢出，所以位移一个 100% 正好翻一页 */
+.track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transform: translateX(calc(var(--i, 0) * -100%));
+  transition: transform 0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.slide {
+  flex: 0 0 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: auto;
+  padding: clamp(20px, 3vh, 30px) clamp(14px, 2vw, 26px) clamp(14px, 2.2vh, 24px);
+}
+
+/* 正文整体套一层框，底色与描边取自棋盘格，和对局画面同一套视觉语言 */
+.slide-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--cell-border);
+  border-radius: 10px;
+  background: var(--cell);
+  padding: clamp(12px, 1.8vh, 20px) clamp(12px, 1.6vw, 18px);
+}
+
+.demo-body {
+  container-type: size;
+  container-name: demo;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: clamp(12px, 2vw, 28px);
+}
+
+/* 子元素上的 cqw/cqh 相对 demo-body，不要在右侧再套一层 size 容器 */
+.demo-stage {
+  position: relative;
+  width: min(48cqw, 100cqh);
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.demo-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+}
+
+.judge-side {
+  justify-content: flex-start;
+}
+
+.judge-formula {
+  flex: none;
+  margin: 0 0 clamp(10px, 1.4vh, 16px);
+  padding: clamp(8px, 1.2vh, 12px) clamp(10px, 1.2vw, 14px);
+  border: 1px solid var(--cell-border);
+  border-radius: 8px;
+  background: var(--panel);
+  font-size: clamp(13px, 1.85vh, 17px);
+  font-weight: 700;
+  line-height: 1.65;
+}
+
+.judge-formula .muted {
+  display: block;
+  margin-top: 0.2em;
+  font-weight: 400;
+}
+
+.judge-cases {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  align-content: stretch;
+  align-items: stretch;
+  gap: clamp(8px, 1.2vh, 14px);
+}
+
+.judge-cases > li {
+  min-height: 0;
+  height: 100%;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.judge-cases .flow-no {
+  align-self: start;
+}
+
+.judge-case {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(6px, 1vh, 10px);
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.judge-case .demo-result {
+  container-type: size;
+  margin-top: 0;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+  align-content: stretch;
+  gap: clamp(6px, 1vh, 10px);
+}
+
+.slide h2 {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.28em;
+  flex: none;
+  font-size: clamp(15px, 2.2vh, 21px);
+  font-weight: 700;
+  line-height: 1;
+  padding-bottom: clamp(10px, 1.6vh, 16px);
+  margin-bottom: clamp(12px, 1.9vh, 20px);
+  border-bottom: 1px solid var(--line);
+}
+
+.rule-no {
+  flex: none;
+  font-size: 1.5em;
+  font-weight: inherit;
+  line-height: 0.8;
+  color: inherit;
+  transform: translateY(0.05em);
+}
+
+.slide p,
+.demo-steps li {
+  text-wrap: pretty;
+}
+
+.slide p {
+  margin: 0 0 0.7em;
+  font-size: clamp(13px, 1.8vh, 17px);
+  line-height: 1.75;
+}
+
+.slide p:last-child {
+  margin-bottom: 0;
+}
+
+.slide .muted {
+  color: var(--muted);
+}
+
+/* ---- 第 1 页：一轮过程的循环演示 ---- */
+
+.demo-board {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 3px;
+  width: 100%;
+  height: 100%;
+}
+
+.demo-board .coin {
+  animation: coin-in 0.4s ease;
+  transition: opacity 0.35s ease, filter 0.35s ease;
+  /* 与键帽字母同一套字号，角标才能用同一套 em 比例 */
+  font-size: 29cqmin;
+}
+
+.demo-board .coin.is-set {
+  animation: none;
+}
+
+.demo-board .coin .coin-tag {
+  top: -0.34em;
+  left: -0.34em;
+  height: 1.3em;
+  padding: 0 0.3em;
+  border-radius: 0.3em;
+  font-size: 0.55em;
+}
+
+.demo-board .coin-amount {
+  font-size: 29cqmin;
+}
+
+@keyframes coin-in {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* 令牌浮在棋盘之上，用百分比定位配合过渡，走位是滑行而不是逐格闪现 */
+.demo-tokens {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.demo-tokens .player {
+  --pick: clamp(9px, 1.3vh, 12px);
+  width: calc(60% / 7);
+  height: calc(60% / 7);
+  font-size: var(--pick);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.3);
+  transition:
+    left 0.34s ease,
+    top 0.34s ease,
+    width 0.34s ease,
+    height 0.34s ease,
+    font-size 0.34s ease,
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.demo-tokens.is-live .player {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.demo-tokens .player.crowded {
+  --pick: calc(clamp(9px, 1.3vh, 12px) * 2 / 3);
+  width: calc(40% / 7);
+  height: calc(40% / 7);
+}
+
+.demo-pick {
+  position: absolute;
+  top: -0.55em;
+  left: -1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5em;
+  height: 1.4em;
+  padding: 0 0.3em;
+  border: 1px solid var(--coin-line);
+  border-radius: 0.35em;
+  background: var(--coin);
+  color: var(--coin-text);
+  font-size: 1em;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.player.has-pick .demo-pick {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.demo-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(4px, 0.7vh, 8px);
+  font-size: clamp(12px, 1.65vh, 16px);
+}
+
+.demo-steps li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.7em;
+  align-items: start;
+  line-height: 1.65;
+  padding: clamp(4px, 0.7vh, 8px) clamp(6px, 0.8vw, 10px);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  opacity: 0.65;
+  transition: opacity 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+/* 正在演示的那一步亮起来，成为看板画面的字幕 */
+.demo-steps li.is-on {
+  opacity: 1;
+  background: var(--panel);
+  border-color: var(--cell-border);
+}
+
+.flow-no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1.75em;
+  height: 1.75em;
+  margin-top: 0.12em;
+  border: 1px solid var(--coin-line);
+  border-radius: 999px;
+  background: var(--coin);
+  color: var(--coin-text);
+  font-size: 0.85em;
+  font-weight: 700;
+}
+
+.demo-result {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: clamp(8px, 1.2vh, 14px);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.demo-result.is-on {
+  opacity: 1;
+}
+
+.demo-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.15em;
+  padding: clamp(4px, 0.7vh, 8px) clamp(7px, 0.9vw, 11px);
+  border: 1px solid var(--cell-border);
+  border-radius: 8px;
+  background: var(--panel);
+  font-size: clamp(11px, 1.45vh, 14px);
+}
+
+.judge-case .demo-chip {
+  min-height: 0;
+  min-width: 0;
+  height: 100%;
+  padding: 0.45em 0.8em;
+  font-size: clamp(13px, 6.4cqi, 17px);
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.judge-case .demo-chip .chip-who {
+  display: flex;
+  align-items: center;
+  flex: none;
+  min-width: 0;
+  line-height: 1;
+}
+
+.judge-case .demo-chip .score-ate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  flex: 0 1 auto;
+  width: 0;
+  min-width: 0;
+  max-width: none;
+  opacity: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  line-height: 1.2;
+  height: auto;
+  font-size: 0.72em;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.45s ease, padding 0.45s ease, width 0.45s ease;
+}
+
+.judge-case .demo-chip.is-eq .score-ate {
+  width: max-content;
+  opacity: 1;
+  overflow: visible;
+  padding: 0.18em 0.45em;
+}
+
+.judge-case .demo-chip .chip-formula {
+  display: grid;
+  grid-template-columns: 3ch 1.15em 2.6ch 1.15em 4.2ch;
+  column-gap: 0.08em;
+  margin-left: auto;
+  flex: none;
+  align-items: center;
+  width: max-content;
+  line-height: 1;
+}
+
+.judge-case .demo-chip .f-pos,
+.judge-case .demo-chip .f-neg,
+.judge-case .demo-chip .f-sum {
+  display: inline-block;
+  text-align: center;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.judge-case .demo-chip .f-eq {
+  text-align: center;
+  line-height: 1;
+}
+
+.demo-chip .f-pos {
+  display: inline-block;
+}
+
+.demo-chip .f-pos.is-pop {
+  animation: chip-pop 0.4s ease;
+}
+
+@keyframes chip-pop {
+  50% { transform: scale(1.28); }
+}
+
+.judge-case .demo-chip [data-eq],
+.judge-case .demo-chip [data-sum] {
+  opacity: 0;
+}
+
+.judge-case .demo-chip.is-eq [data-eq],
+.judge-case .demo-chip.is-sum [data-sum] {
+  animation: chip-fade 0.5s ease forwards;
+}
+
+@keyframes chip-fade {
+  to { opacity: 1; }
+}
+
+/* 窄窗口放不下棋盘，退化成纯文字，步骤高亮照常轮播 */
+@media (max-width: 820px) {
+  .demo-stage {
+    display: none;
+  }
+
+  .demo-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .demo-steps li {
+    opacity: 1;
+  }
+
+  .demo-result {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    transition-duration: 0.01s;
+  }
+
+  .demo-tokens .player,
+  .demo-pick,
+  .demo-board .coin {
+    transition-duration: 0.01s;
+    animation: none;
+  }
+}
+
+/* ---- 第 3 页：金币格与按键映射 ---- */
+
+.map-side {
+  justify-content: stretch;
+  gap: clamp(8px, 1.2vh, 14px);
+}
+
+.map-lead {
+  flex: none;
+  margin: 0;
+}
+
+.demo-board .coin.is-dim,
+.key.is-dim {
+  opacity: 0.28;
+  filter: grayscale(0.35);
+}
+
+.demo-board .coin.is-focus {
+  z-index: 1;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 0 0 3px rgba(184, 148, 72, 0.55),
+    0 2px 8px rgba(160, 128, 62, 0.22);
+}
+
+.key.is-focus {
+  background: #fff6df;
+  border-color: var(--coin-line);
+  box-shadow: 0 0 0 2px rgba(184, 148, 72, 0.45);
+  transform: scale(1.08);
+}
+
+.key {
+  transition: opacity 0.3s ease, filter 0.3s ease, background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.key-demos {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  align-items: stretch;
+  gap: clamp(8px, 1.4vh, 16px) clamp(8px, 1.2vw, 16px);
+  font-size: clamp(13px, 1.8vh, 17px);
+}
+
+.key-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 1.6vh, 16px);
+  min-width: 0;
+  min-height: 0;
+}
+
+.key-demo .controls-left {
+  font-size: clamp(14px, 1.7vh, 18px);
+  font-weight: 700;
+  gap: 0.4em;
+}
+
+.key-demo .dot {
+  width: 1.05em;
+  height: 1.05em;
+  margin-right: 0;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 4px rgba(90, 78, 55, 0.25);
+}
+
+/*
+  金币格 = 棋盘一格里那块略小的金色方块（.coin 为格子的 80%）。
+  一颗键对齐这块，不是整组四键去对一格。cqw 必须相对 demo-body。
+*/
+.map-side .key-demo .keypad {
+  --tile: calc((min(48cqw, 100cqh) - 18px) / 7 * 0.8);
+  width: max-content;
+  height: max-content;
+  font-size: calc(var(--tile) * 0.4);
+  gap: 3px;
+  grid-template-columns: repeat(3, var(--tile));
+  grid-template-rows: repeat(2, var(--tile));
+}
+
+.map-side .key {
+  width: var(--tile);
+  height: var(--tile);
+  font-size: calc(var(--tile) * 0.36);
+}
+
+.map-side .key.is-focus {
+  transform: none;
+}
+
+/* ---- 页码与开始键 ---- */
+
+.dots {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line);
+  transition: width 0.2s, background 0.2s;
+}
+
+.dots span.on {
+  width: 24px;
+  background: var(--accent);
+}
+
+.rules-actions {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(4px, 0.8vh, 10px);
+}
+
+.btn-start {
+  width: auto;
+  min-width: min(100%, 17rem);
+  padding: clamp(9px, 1.5vh, 14px) 34px;
+  border-radius: 10px;
+  font-size: clamp(14px, 2vh, 20px);
+  box-shadow: 0 4px 14px rgba(95, 141, 112, 0.28);
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+}
+
+.btn:disabled,
+.btn:disabled:hover {
+  background: #d7d1c5;
+  color: #f6f4ef;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.rules-note {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: clamp(11px, 1.5vh, 14px);
+}

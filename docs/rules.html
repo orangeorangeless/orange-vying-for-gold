@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>游戏规则 · 四角抢金币</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="rules.css?v=live21" />
+</head>
+<body class="rules-body">
+  <main class="rules">
+    <header class="rules-head">
+      <h1>四角抢金币</h1>
+      <span class="rules-sub">四人同屏 · 9×9 棋盘 · 共 100 轮</span>
+    </header>
+
+    <div class="carousel">
+      <button type="button" id="prevBtn" class="nav-btn" aria-label="上一页">‹</button>
+
+      <div class="deck">
+        <div id="track" class="track">
+
+          <article class="slide" data-slide>
+            <h2><span class="rule-no">1</span>一轮的完整过程</h2>
+            <div class="slide-body demo-body">
+              <div class="demo-stage" aria-hidden="true">
+                <div id="demoBoard" class="demo-board"></div>
+                <div id="demoTokens" class="demo-tokens"></div>
+              </div>
+              <div class="demo-side">
+                <ol id="demoSteps" class="demo-steps">
+                  <li><span class="flow-no">1</span><span>四人被<b>随机</b>分到四角，每轮重新分配。</span></li>
+                  <li><span class="flow-no">2</span><span>出现 <b>4 个金币格</b>，面额 5–40 随机。</span></li>
+                  <li><span class="flow-no">3</span><span>各自按方向键锁定一个金币格，<b>不能反悔</b>。</span></li>
+                  <li><span class="flow-no">4</span><span>四人<b>同时出发</b>，一步一步走最短路径。</span></li>
+                </ol>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide" data-slide>
+            <h2><span class="rule-no">2</span>谁拿到金币，怎么算分</h2>
+            <div class="slide-body demo-body">
+              <div class="demo-stage" aria-hidden="true">
+                <div id="judgeBoard" class="demo-board"></div>
+                <div id="judgeTokens" class="demo-tokens"></div>
+              </div>
+              <div class="demo-side judge-side">
+                <p class="judge-formula">
+                  本轮得分 = <span class="f-pos">吃到的金额</span> <span class="f-eq">−</span> <span class="f-neg">走过的步数</span>
+                  <span class="muted">没吃到就是 0 减步数，所以是负分。</span>
+                </p>
+                <ol id="judgeSteps" class="demo-steps judge-cases">
+                  <li>
+                    <span class="flow-no">1</span>
+                    <div class="judge-case">
+                      <span><b>先到先得，后到不得。</b>最先踩到的人独得；晚一步到的什么也没有，步数照扣。</span>
+                      <div class="demo-result" data-judge-result></div>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="flow-no">2</span>
+                    <div class="judge-case">
+                      <span><b>同时先到不得。</b>同一步踩上同一格，这枚金币作废，两个人都白跑。</span>
+                      <div class="demo-result" data-judge-result></div>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide" data-slide>
+            <h2><span class="rule-no">3</span>金币格和按键怎么对应</h2>
+            <div class="slide-body demo-body">
+              <div class="demo-stage" aria-hidden="true">
+                <div id="mapBoard" class="demo-board"></div>
+                <div id="mapTokens" class="demo-tokens"></div>
+              </div>
+              <div class="demo-side map-side">
+                <p class="map-lead">每个金币格对应四名玩家的同一方向键。一人按自己的那一颗，就能选定这一格。</p>
+                <div class="key-demos" id="mapKeys">
+                  <div class="key-demo">
+                    <span class="controls-left"><span class="dot p1"></span>红方</span>
+                    <div class="keypad">
+                      <span class="key key-up" data-map-key="A"><span class="coin-tag">A</span>W</span>
+                      <span class="key key-left" data-map-key="B"><span class="coin-tag">B</span>A</span>
+                      <span class="key key-down" data-map-key="C"><span class="coin-tag">C</span>S</span>
+                      <span class="key key-right" data-map-key="D"><span class="coin-tag">D</span>D</span>
+                    </div>
+                  </div>
+                  <div class="key-demo">
+                    <span class="controls-left"><span class="dot p2"></span>蓝方</span>
+                    <div class="keypad">
+                      <span class="key key-up" data-map-key="A"><span class="coin-tag">A</span>I</span>
+                      <span class="key key-left" data-map-key="B"><span class="coin-tag">B</span>J</span>
+                      <span class="key key-down" data-map-key="C"><span class="coin-tag">C</span>K</span>
+                      <span class="key key-right" data-map-key="D"><span class="coin-tag">D</span>L</span>
+                    </div>
+                  </div>
+                  <div class="key-demo">
+                    <span class="controls-left"><span class="dot p3"></span>绿方</span>
+                    <div class="keypad">
+                      <span class="key key-up" data-map-key="A"><span class="coin-tag">A</span>T</span>
+                      <span class="key key-left" data-map-key="B"><span class="coin-tag">B</span>F</span>
+                      <span class="key key-down" data-map-key="C"><span class="coin-tag">C</span>G</span>
+                      <span class="key key-right" data-map-key="D"><span class="coin-tag">D</span>H</span>
+                    </div>
+                  </div>
+                  <div class="key-demo">
+                    <span class="controls-left"><span class="dot p4"></span>紫方</span>
+                    <div class="keypad">
+                      <span class="key key-up" data-map-key="A"><span class="coin-tag">A</span><span class="key-arrow">↑</span></span>
+                      <span class="key key-left" data-map-key="B"><span class="coin-tag">B</span><span class="key-arrow">←</span></span>
+                      <span class="key key-down" data-map-key="C"><span class="coin-tag">C</span><span class="key-arrow">↓</span></span>
+                      <span class="key key-right" data-map-key="D"><span class="coin-tag">D</span><span class="key-arrow">→</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <button type="button" id="nextBtn" class="nav-btn" aria-label="下一页">›</button>
+    </div>
+
+    <div id="dots" class="dots" aria-hidden="true"></div>
+
+    <footer class="rules-actions">
+      <button type="button" id="startBtn" class="btn btn-start" disabled>开始游戏</button>
+      <p id="rulesNote" class="rules-note">翻完 3 页规则后即可开始</p>
+    </footer>
+  </main>
+
+  <script src="rules.js?v=live21"></script>
+</body>
+</html>
