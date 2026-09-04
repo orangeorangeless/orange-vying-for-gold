@@ -1,0 +1,16 @@
+{
+  "name": "Vying for Gold",
+  "install": "cd project/backend && npm install",
+  "terminals": [
+    {
+      "name": "game-server",
+      "command": "cd project/backend && npm start"
+    }
+  ],
+  "ports": [
+    {
+      "name": "Game + API",
+      "port": 8080
+    }
+  ]
+}
