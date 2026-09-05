@@ -705,6 +705,10 @@ function setupCarousel() {
     // 从对局中新标签页打开，页面内没有可返回的入口，关掉标签页即可
     startBtn.classList.add("hidden");
     noteEl.textContent = "看完关闭本标签页即可，对局进度不会丢失。";
+  } else if (embed) {
+    startBtn.addEventListener("click", () => {
+      window.parent.postMessage({ type: "rules-close" }, "*");
+    });
   } else {
     startBtn.addEventListener("click", () => {
       try {

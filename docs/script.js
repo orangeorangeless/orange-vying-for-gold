@@ -451,7 +451,7 @@ function setupRulesModal() {
   if (!link || !modal || !frame || !closeBtn) return;
 
   function openRules() {
-    frame.src = "rules.html?embed=1&v=live21";
+    frame.src = "rules.html?embed=1&v=live31";
     setTimeout(() => modal.showModal(), 0);
   }
 
@@ -468,6 +468,10 @@ function setupRulesModal() {
   frame.addEventListener("load", () => {
     if (!modal.open) return;
     frame.contentWindow?.focus();
+  });
+  window.addEventListener("message", (e) => {
+    if (e.source !== frame.contentWindow) return;
+    if (e.data?.type === "rules-close") modal.close();
   });
 }
 
